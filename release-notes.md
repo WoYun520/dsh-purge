@@ -1,3 +1,23 @@
+# 1.1.72
+
+## 中文
+
+- 版本 **1.1.72**：适配 DSH **0.2.2-rc.1**。
+- `package.json` 新增 `engines.dsh: ">=0.2.2-rc.1 <0.3.0"`，`dshTarget` 更新为 `0.2.2-rc.1`；装不上/装错版本由安装期直接拦下。
+- 新增 `lib/compat-guard.js` 运行时兼容守卫：先按 `engines.dsh` + 运行中宿主版本自查，再探测 `systemPrompt` / `tools` 服务与 `ctx.on` / `ctx.effect` 能力；任一不过就**自禁插件、不碰宿主文件**，Cordis 其余行照常起树，网页仍能打开、日志里能看到原因。
+- `apply()` 不再让 `applyHostHooks` 的异常拖挂整行：守卫与钩子注册串成一条 Promise 链，失败只 `warn`，宿主保持可用。
+- `settle` 在守卫未通过时直接跳过，避免按旧标记重写 `/opt/dsh` 下的宿主包。
+- 兼容守卫判定有单元级自测（`node --check` 三个入口 + 用假 ctx 跑 `guardRuntime`）。
+
+## English
+
+- **1.1.72**: adapts to DSH **0.2.2-rc.1**.
+- `package.json` declares `engines.dsh: ">=0.2.2-rc.1 <0.3.0"` and bumps `dshTarget` to `0.2.2-rc.1`, so a wrong runtime is rejected at install time.
+- New `lib/compat-guard.js` runtime guard: checks the declared `engines.dsh` against the running host version, then probes the `systemPrompt` / `tools` services and `ctx.on` / `ctx.effect`. Any failure disables the plugin itself and leaves host files untouched; the rest of the Cordis tree still boots and the web UI stays reachable with the reason logged.
+- `apply()` no longer lets a throwing `applyHostHooks` take down the whole row: the guard and hook registration now form one promise chain and failures only log a warning.
+- `settle` skips entirely while the guard has not passed, so stale markers no longer rewrite host packages under `/opt/dsh`.
+- Covered by `node --check` on all three entries plus a `guardRuntime` run against a stub ctx.
+
 # 1.1.71
 
 ## 中文
